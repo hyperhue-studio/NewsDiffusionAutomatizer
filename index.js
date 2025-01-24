@@ -1,7 +1,7 @@
 import express from "express";
 import bodyParser from "body-parser";
 import dotenv from "dotenv";
-import fetch from "node-fetch";
+import fetch from 'node-fetch';
 import path from "path";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
