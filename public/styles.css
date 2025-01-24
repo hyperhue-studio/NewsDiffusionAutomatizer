@@ -1,0 +1,206 @@
+/* RESET: Reiniciamos márgenes y paddings */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Fuente principal */
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #f8f9fa;
+    color: #333;
+    line-height: 1.5;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+/* Contenedor principal */
+.container {
+    width: 100%;
+    max-width: 800px;
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    padding: 30px;
+    text-align: center;
+}
+
+/* Encabezado */
+.header h1 {
+    font-size: 2rem;
+    color: #4e4e4e;
+    margin-bottom: 10px;
+}
+
+.header p {
+    font-size: 1rem;
+    color: #777;
+}
+
+/* Contenedor de formulario */
+.form-container {
+    margin: 20px 0;
+}
+
+/* Estilos para el área de texto */
+textarea {
+    width: 100%;
+    padding: 12px;
+    margin-top: 10px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 1rem;
+    background-color: #f9f9f9;
+    color: #333;
+    resize: none;
+}
+
+textarea:focus {
+    border-color: #4c6ef5;
+    outline: none;
+    background-color: #ffffff;
+}
+
+/* Botón de procesar */
+button {
+    margin-top: 20px;
+    padding: 12px 24px;
+    background-color: #4c6ef5;
+    color: #ffffff;
+    font-size: 1rem;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #3654d4;
+}
+
+/* Botón de instrucciones */
+#instructions-button {
+    margin-top: 15px;
+    padding: 10px 20px;
+    background-color: #f1f1f1;
+    color: #4e4e4e;
+    font-size: 1rem;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+#instructions-button:hover {
+    background-color: #ddd;
+}
+
+/* Contenedor de salida */
+.output-container {
+    margin-top: 30px;
+}
+
+#output-text {
+    background-color: #f3f4f6;
+    color: #333;
+    border: 1px solid #ddd;
+    padding: 12px;
+    border-radius: 8px;
+    font-size: 1rem;
+    resize: none;
+    min-height: 200px;
+}
+
+#output-text:focus {
+    outline: none;
+}
+
+/* Popup de instrucciones */
+.popup {
+    display: none; /* Inicialmente oculto */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+}
+
+/* Ajustes en el popup para hacerlo más horizontal */
+.popup-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 12px;
+    width: 70%; /* Reducimos el ancho máximo */
+    max-height: 70vh; /* Limitamos la altura máxima para evitar que ocupe todo el viewport */
+    overflow-y: auto; /* Añadimos un scroll interno si el contenido excede la altura máxima */
+    text-align: left;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    position: relative;
+}
+
+/* Ajustamos el tamaño del texto */
+.popup-content h2 {
+    font-size: 1.25rem; /* Reducimos ligeramente el tamaño del título */
+    margin-bottom: 10px;
+}
+
+.popup-content p,
+.popup-content pre {
+    font-size: 0.9rem; /* Reducimos el tamaño del texto del contenido */
+    line-height: 1.4; /* Mejoramos el espaciado entre líneas para legibilidad */
+}
+
+/* Estilo del preformato para el ejemplo */
+.popup-content pre {
+    background-color: #f4f4f4;
+    padding: 10px;
+    border-radius: 6px;
+    font-family: 'Courier New', monospace;
+    color: #555;
+    word-wrap: break-word;
+    white-space: pre-wrap;
+    margin-bottom: 10px;
+    max-height: 50vh; /* Limitamos también la altura del bloque preformateado */
+    overflow-y: auto; /* Scroll interno si el texto excede la altura */
+}
+
+/* Ajustamos el botón de cerrar */
+#close-popup {
+    font-size: 1.5rem; /* Reducimos el tamaño del botón de cerrar */
+    color: #aaa;
+    cursor: pointer;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+}
+
+#close-popup:hover {
+    color: #333;
+}
+
+
+/* Estilo para el contenido del popup */
+h2 {
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+}
+
+pre {
+    background-color: #f4f4f4;
+    padding: 10px;
+    border-radius: 6px;
+    font-family: 'Courier New', monospace;
+    color: #555;
+    word-wrap: break-word;
+    white-space: pre-wrap;
+    margin-bottom: 10px;
+}
