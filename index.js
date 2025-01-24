@@ -105,4 +105,4 @@ app.listen(port, () => {
   console.log(`Servidor escuchando en http://localhost:${port}`);
 });
 
-module.exports = app;
+exports = app;
