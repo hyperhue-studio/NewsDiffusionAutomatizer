@@ -7,97 +7,110 @@
 
 /* Fuente principal */
 body {
-    font-family: 'Inter', sans-serif;
-    background-color: #f8f9fa;
-    color: #333;
-    line-height: 1.5;
+    font-family: 'Arial', sans-serif;
+    background-color: #141414;  /* Fondo aún más oscuro */
+    color: #ddd;
+    padding: 20px;
     display: flex;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    padding: 20px;
+    overflow: auto;
 }
 
 /* Contenedor principal */
 .container {
-    width: 100%;
-    max-width: 800px;
-    background-color: #ffffff;
-    border-radius: 12px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    padding: 30px;
+    width: 90%;
+    max-width: 900px;
     text-align: center;
+    background-color: #222;  /* Fondo de contenedor oscuro */
+    padding: 30px;
+    border-radius: 12px; /* Bordes más redondeados */
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.7); /* Sombra más pronunciada */
+    display: flex;
+    flex-direction: column;
+    border: 3px solid #444; /* Contorno del contenedor */
 }
 
-/* Encabezado */
-.header h1 {
-    font-size: 2rem;
-    color: #4e4e4e;
-    margin-bottom: 10px;
+/* Título */
+h1 {
+    font-size: 1.9rem;
+    margin-bottom: 20px;
+    color: #fff;
+    border-bottom: 2px solid #444; /* Línea de separación debajo del título */
+    padding-bottom: 10px;
 }
 
-.header p {
+/* Etiqueta */
+label {
     font-size: 1rem;
-    color: #777;
+    display: block;
+    margin-bottom: 10px;
+    color: #bbb; /* Gris claro para las etiquetas */
 }
 
-/* Contenedor de formulario */
+/* Contenedor de texto */
 .form-container {
     margin: 20px 0;
 }
 
-/* Estilos para el área de texto */
+/* Estilo de área de texto */
 textarea {
     width: 100%;
-    padding: 12px;
+    padding: 14px;
     margin-top: 10px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
+    border: 3px solid #444;  /* Bordes más gruesos */
+    border-radius: 10px;
+    background-color: #333;
+    color: #fff;
     font-size: 1rem;
-    background-color: #f9f9f9;
-    color: #333;
     resize: none;
+    transition: border-color 0.3s ease, background-color 0.3s ease;
 }
 
 textarea:focus {
-    border-color: #4c6ef5;
     outline: none;
-    background-color: #ffffff;
+    border-color: #007BFF;  /* Resalta al enfocar */
+    background-color: #444; /* Fondo ligeramente más claro */
 }
 
 /* Botón de procesar */
 button {
-    margin-top: 20px;
-    padding: 12px 24px;
-    background-color: #4c6ef5;
-    color: #ffffff;
-    font-size: 1rem;
+    margin-top: 15px;  /* Ajustamos el padding aquí */
+    padding: 14px 28px;
+    background-color: #555;  /* Gris oscuro */
+    color: #fff;  /* Color claro */
+    font-size: 1.1rem;
     font-weight: bold;
-    border: none;
-    border-radius: 8px;
+    border: 3px solid #333;  /* Borde oscuro */
+    border-radius: 12px; /* Bordes redondeados */
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 button:hover {
-    background-color: #3654d4;
+    background-color: #fff;  /* Fondo blanco al hacer hover */
+    color: #141414;  /* Texto negro */
+    border-color: #333;  /* Borde más oscuro al hacer hover */
 }
 
 /* Botón de instrucciones */
 #instructions-button {
     margin-top: 15px;
-    padding: 10px 20px;
-    background-color: #f1f1f1;
-    color: #4e4e4e;
-    font-size: 1rem;
-    border: none;
-    border-radius: 8px;
+    padding: 12px 22px;
+    background-color: #555;  /* Gris más claro */
+    color: #fff;
+    border: 3px solid #333;
+    border-radius: 12px;
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    font-size: 1rem;
+    transition: 0.3s;
 }
 
 #instructions-button:hover {
-    background-color: #ddd;
+    background-color: #fff;  /* Hover blanco */
+    color: #141414;  /* Texto negro */
+    border-color: #333;  /* Borde más oscuro */
 }
 
 /* Contenedor de salida */
@@ -105,102 +118,83 @@ button:hover {
     margin-top: 30px;
 }
 
+/* Estilo del área de texto de salida */
 #output-text {
-    background-color: #f3f4f6;
-    color: #333;
-    border: 1px solid #ddd;
-    padding: 12px;
-    border-radius: 8px;
+    background-color: #333;
+    color: #fff;
+    border: 3px solid #444;  /* Bordes más gruesos para salida */
+    padding: 14px;
+    border-radius: 10px;
     font-size: 1rem;
     resize: none;
     min-height: 200px;
 }
 
-#output-text:focus {
-    outline: none;
-}
-
 /* Popup de instrucciones */
 .popup {
-    display: none; /* Inicialmente oculto */
+    display: none;
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: rgba(0, 0, 0, 0.8); /* Fondo más oscuro para el popup */
     justify-content: center;
     align-items: center;
     z-index: 999;
 }
 
-/* Ajustes en el popup para hacerlo más horizontal */
 .popup-content {
-    background-color: white;
-    padding: 20px;
+    background-color: #222;  /* Fondo oscuro del popup */
+    padding: 30px;
     border-radius: 12px;
-    width: 70%; /* Reducimos el ancho máximo */
-    max-height: 70vh; /* Limitamos la altura máxima para evitar que ocupe todo el viewport */
-    overflow-y: auto; /* Añadimos un scroll interno si el contenido excede la altura máxima */
+    width: 75%;
+    max-height: 70vh;
+    overflow-y: auto;
     text-align: left;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.8); /* Sombra más intensa */
     position: relative;
+    border: 4px solid #444; /* Borde del popup */
 }
 
-/* Ajustamos el tamaño del texto */
 .popup-content h2 {
-    font-size: 1.25rem; /* Reducimos ligeramente el tamaño del título */
-    margin-bottom: 10px;
+    font-size: 1.5rem;
+    margin-bottom: 15px;
+    color: #fff;
+    border-bottom: 2px solid #444; /* Línea en la parte inferior del título */
+    padding-bottom: 10px;
 }
 
 .popup-content p,
 .popup-content pre {
-    font-size: 0.9rem; /* Reducimos el tamaño del texto del contenido */
-    line-height: 1.4; /* Mejoramos el espaciado entre líneas para legibilidad */
+    font-size: 1rem;
+    line-height: 1.4;
+    color: #bbb; /* Gris claro para el texto */
 }
 
-/* Estilo del preformato para el ejemplo */
 .popup-content pre {
-    background-color: #f4f4f4;
-    padding: 10px;
+    background-color: #444;
+    padding: 12px;
     border-radius: 6px;
     font-family: 'Courier New', monospace;
-    color: #555;
+    color: #fff;
     word-wrap: break-word;
     white-space: pre-wrap;
-    margin-bottom: 10px;
-    max-height: 50vh; /* Limitamos también la altura del bloque preformateado */
-    overflow-y: auto; /* Scroll interno si el texto excede la altura */
+    margin-bottom: 15px;
+    max-height: 60vh;
+    overflow-y: auto;
 }
 
-/* Ajustamos el botón de cerrar */
+/* Botón de cierre del popup */
 #close-popup {
-    font-size: 1.5rem; /* Reducimos el tamaño del botón de cerrar */
-    color: #aaa;
+    font-size: 1.8rem;
+    color: #bbb;
     cursor: pointer;
     position: absolute;
-    top: 10px;
-    right: 10px;
+    top: 15px;
+    right: 15px;
 }
 
 #close-popup:hover {
-    color: #333;
-}
-
-
-/* Estilo para el contenido del popup */
-h2 {
-    font-size: 1.5rem;
-    margin-bottom: 10px;
-}
-
-pre {
-    background-color: #f4f4f4;
-    padding: 10px;
-    border-radius: 6px;
-    font-family: 'Courier New', monospace;
-    color: #555;
-    word-wrap: break-word;
-    white-space: pre-wrap;
-    margin-bottom: 10px;
+    color: #fff;
 }
