@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,24 +8,25 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
 </head>
+
 <body>
     <div class="container">
         <div class="header">
             <h1>Generador de Difusión</h1>
             <p>Genera el formato de la difusión con emojis y enlaces acortados</p>
-            <button id="instructions-button">Instrucciones</button>
+            <button id="instructions-button">📄 Instrucciones</button>
         </div>
 
         <div class="form-container">
             <textarea id="input-text" placeholder="Pega el texto de la difusión sin procesar aquí" rows="8"></textarea>
-            <button id="process-button">Generar difusión</button>
+            <button id="process-button">🤖 Generar difusión</button>
         </div>
 
         <div class="output-container">
             <textarea id="output-text" readonly rows="12" placeholder="El resultado generado aparecerá aquí"></textarea>
+            <button id="copy-button" disabled>📋 Copiar Difusión</button>
         </div>
 
-        <!-- Popup de instrucciones -->
         <div id="instructions-popup" class="popup">
             <div class="popup-content">
                 <span id="close-popup" class="close-btn">&times;</span>
@@ -41,10 +43,12 @@ https://www.oem.com.mx/elheraldodechihuahua/local/detras-de-casos-de-tortura-ani
 
 PROGRAMADA: ¡Camarón que se duerme! Se dispara más de un 50% la compra de mariscos en la capital
 https://www.oem.com.mx/elheraldodechihuahua/finanzas/se-dispara-mas-de-un-50-la-compra-de-mariscos-en-la-capital-22133037</pre>
-                <p>Pega el texto de la difusión como el del ejemplo y presiona el botón "Generar difusión" para obtener la tuya.</p>
+                <p>Pega el texto de la difusión como el del ejemplo y presiona el botón "Generar difusión" para obtener
+                    la tuya.</p>
             </div>
         </div>
     </div>
     <script src="script.js"></script>
 </body>
+
 </html>
