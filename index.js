@@ -5,25 +5,22 @@ import fetch from 'node-fetch';
 import path from "path";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-dotenv.config(); // Cargar las variables de entorno desde .env
+dotenv.config();
 
 const app = express();
 const port = 3000;
 
-// Configurar middleware
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(express.static("public"));
 
-// Inicializar la API de Google Generative AI
 const genAI = new GoogleGenerativeAI(process.env.API_KEY);
 const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
-// Ruta para obtener el clima
 app.get("/get-weather", async (req, res) => {
   try {
     const apiKey = process.env.WEATHER_API_KEY;
-    const city = "Chihuahua"; // Puedes parametrizar la ciudad si es necesario
+    const city = "Chihuahua";
     const url = `https://api.weatherapi.com/v1/forecast.json?key=${apiKey}&q=${city}&days=2`;
 
     const response = await fetch(url);
@@ -40,7 +37,6 @@ app.get("/get-weather", async (req, res) => {
   }
 });
 
-// Ruta para acortar URLs
 app.post("/shorten-url", async (req, res) => {
   const { url } = req.body;
 
@@ -76,7 +72,6 @@ app.post("/shorten-url", async (req, res) => {
   }
 });
 
-// Ruta para obtener el emoji
 app.post("/get-emoji", async (req, res) => {
   const { title } = req.body;
 
@@ -100,10 +95,60 @@ app.post("/get-emoji", async (req, res) => {
   }
 });
 
-// Iniciar el servidor
+app.post("/extract-data", async (req, res) => {
+  const { text } = req.body;
+
+  if (!text) {
+    return res.status(400).json({ error: "El texto es obligatorio." });
+  }
+
+  try {
+    const prompt = `
+Vas a recibir un texto con 4 noticias. Cada noticia contiene un título y su respectivo enlace.
+- Tu tarea es extraer exactamente 4 títulos y sus enlaces, ignorando cualquier prefijo o estructura innecesaria como "PROGRAMADA:", "RÁFAGAS:", errores tipográficos o acompañamientos basura.
+- Devuélvelos en un JSON puro con la siguiente estructura:
+
+{
+  "noticias": [
+    {"titulo": "Título 1", "enlace": "URL 1", "emoji": "📰"},
+    {"titulo": "Título 2", "enlace": "URL 2", "emoji": "📰"},
+    {"titulo": "Título 3", "enlace": "URL 3", "emoji": "📰"},
+    {"titulo": "Título 4", "enlace": "URL 4", "emoji": "📰"}
+  ]
+}
+
+Reglas específicas:
+- Genera un emoji representativo para cada título basado en su contenido, el emoji de 📰 es solamente un placeholder, no lo dejes ahí. Tienes que cambiar los emojis por uno correspondiente a sus temas, de forma responsable y respetuosa.
+- No inventes noticias ni enlaces, simplemente extrae y estructura los datos.
+- No devuelvas más de 4 elementos, si el usuario ingresó más, ignora los extras.
+- **Si una noticia pertenece a RÁFAGAS, conserva cualquier guion que aparezca al inicio del título.**
+- **No modifiques el contenido de los títulos, solo elimina prefijos como "PROGRAMADA:", "RÁFAGAS:", pero NO toques los guiones en los títulos de RÁFAGAS.**
+- No pongas comentarios ni explicación adicional, solo devuelve el JSON limpio.
+
+Texto de entrada:
+"${text}"
+`;
+
+    const result = await model.generateContent([prompt]);
+    let responseText = result.response.text().trim();
+
+    responseText = responseText.replace(/```json|```/g, "").trim();
+
+    try {
+      const parsedData = JSON.parse(responseText);
+      res.json({ success: true, noticias: parsedData.noticias });
+    } catch (jsonError) {
+      console.error("Error al parsear la respuesta de la IA:", responseText);
+      res.status(500).json({ error: "Error al procesar la respuesta de la IA." });
+    }
+  } catch (error) {
+    console.error("Error al extraer datos:", error);
+    res.status(500).json({ error: "Hubo un error al extraer los datos." });
+  }
+});
+
 app.listen(port, () => {
   console.log(`Servidor escuchando en http://localhost:${port}`);
 });
 
 export default app;
-
