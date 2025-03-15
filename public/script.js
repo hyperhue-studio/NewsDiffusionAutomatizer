@@ -1,17 +1,11 @@
-// const bitlyToken = '88e537465fab711d58bbf247b2ac38ca91fc019d';  // Reemplaza con tu token de Bitly
-// const weatherApiKey = 'b7f58c1e6fee4182a7534410251501';  // Reemplaza con tu API Key de WeatherAPI
-
-// Función para abrir el popup
 document.getElementById('instructions-button').addEventListener('click', () => {
     document.getElementById('instructions-popup').style.display = 'flex';
 });
 
-// Función para cerrar el popup
 document.getElementById('close-popup').addEventListener('click', () => {
     document.getElementById('instructions-popup').style.display = 'none';
 });
 
-// Cerrar el popup si se hace clic fuera de él
 window.addEventListener('click', (event) => {
     const popup = document.getElementById('instructions-popup');
     if (event.target === popup) {
@@ -19,79 +13,57 @@ window.addEventListener('click', (event) => {
     }
 });
 
+document.addEventListener("DOMContentLoaded", () => {
+    const outputText = document.getElementById("output-text");
+    const copyButton = document.getElementById("copy-button");
+
+    copyButton.addEventListener("click", () => {
+        navigator.clipboard.writeText(outputText.value)
+            .then(() => {
+                console.log("Texto copiado al portapapeles.");
+            })
+            .catch((err) => {
+                console.error("Error al copiar la difusión:", err);
+                alert("❌ Hubo un error al copiar la difusión.");
+            });
+    });
+});
 
 document.getElementById('process-button').addEventListener('click', async () => {
     const inputText = document.getElementById('input-text').value.trim();
+    const outputText = document.getElementById("output-text");
+    const copyButton = document.getElementById("copy-button");
 
-    // Validar que el campo no esté vacío
     if (inputText === '') {
         alert('Por favor, pega el texto de las noticias.');
         return;
     }
 
-    // Separar las líneas del texto pegado
-    const lines = inputText.split('\n').filter(line => line.trim() !== '');
-    console.log('Líneas separadas:', lines); // Ver las líneas que se están separando
+    const extractedData = await extractDataFromAI(inputText);
+    if (!extractedData || extractedData.length !== 4) {
+        alert('No se pudieron extraer correctamente las 4 noticias.');
+        return;
+    }
 
     const outputLines = [];
-    let currentTitle = '';  // Para guardar el título actual
-    let currentPrefix = ''; // Para guardar el prefijo actual (PROGRAMADA: o RÁFAGAS:)
 
-    // Procesar las líneas
-    for (let i = 0; i < lines.length; i++) {
-        const line = lines[i].trim();
-        console.log('Línea procesada:', line);
+    for (let i = 0; i < extractedData.length; i++) {
+        const { titulo, enlace, emoji } = extractedData[i];
+        const shortenedUrl = await shortenUrl(enlace);
 
-        // Detectar título con prefijo
-        const titleMatch = line.match(/^(PROGRAMADA:|RÁFAGAS:)\s*(.*)$/);
-
-        if (titleMatch) {
-            currentPrefix = titleMatch[1].trim();
-            currentTitle = titleMatch[2].trim();
-            console.log('Título detectado:', currentTitle);
-        }
-
-        // Detectar URL en la siguiente línea
-        if (line.match(/^https?:\/\//)) {
-            const url = line.trim();
-            console.log('URL detectada:', url);
-
-            if (currentTitle) {
-                let emoji = '';
-
-                // No generar emoji para títulos con prefijo "RÁFAGAS:"
-                if (currentPrefix !== 'RÁFAGAS:') {
-                    // Llamar al servidor para obtener el emoji correspondiente al título
-                    emoji = await getEmojiForTitleFromServer(currentTitle);
-                }
-
-                const shortenedUrl = await shortenUrl(url);
-
-                if (shortenedUrl) {
-                    // Agregar la noticia al arreglo de resultados
-                    if (currentPrefix === 'RÁFAGAS:') {
-                        // Solo agregar el emoji de pluma en la línea con "RÁFAGAS:"
-                        outputLines.push(`✒️ *RÁFAGAS*\n${currentTitle}\n🔗 ${shortenedUrl}`);
-                    } else {
-                        // Para otros títulos, agregar el emoji generado
-                        outputLines.push(`${emoji} *${currentTitle}*\n🔗 ${shortenedUrl}`);
-                    }
-                    console.log('Noticia procesada:', currentTitle, shortenedUrl);
-                }
-
-                currentTitle = '';  // Resetear el título para la próxima noticia
-                currentPrefix = ''; // Resetear el prefijo
+        if (shortenedUrl) {
+            if (i === 1) { 
+                outputLines.push(`✒️ *RÁFAGAS*\n${titulo}\n🔗 ${shortenedUrl}`);
+            } else {
+                outputLines.push(`${emoji} *${titulo}*\n🔗 ${shortenedUrl}`);
             }
         }
     }
 
-    // Ver el contenido final que se va a mostrar en el área de texto
-    console.log('Líneas de salida:', outputLines);
-
     const weather = await getWeather();
-    if (!weather) return; // Si hubo un error al obtener el clima, no continuar
+    if (!weather) return;
 
-    const outputText = `
+    const finalText = `
 ☀️ *¡Buenos días!* 
 🌡️ *Temperatura para hoy*
 Mínima ${weather.min}°C | Máxima ${weather.max}°C 
@@ -101,12 +73,31 @@ Mínima ${weather.min}°C | Máxima ${weather.max}°C
 ${outputLines.join('\n\n')}
     `;
 
-    // Ver el mensaje final generado antes de mostrarlo
-    console.log('Mensaje final generado:', outputText);
+    outputText.value = finalText.trim();
 
-    document.getElementById('output-text').value = outputText.trim();
+    copyButton.classList.add("enabled");
+    copyButton.disabled = false;
 });
 
+async function extractDataFromAI(text) {
+    try {
+        const response = await fetch('/extract-data', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ text })
+        });
+
+        const data = await response.json();
+        console.log("Datos extraídos de la IA:", data);
+
+        return data.noticias || [];
+    } catch (error) {
+        console.error('Error al extraer datos de la IA:', error);
+        return [];
+    }
+}
 
 async function getEmojiForTitleFromServer(title) {
     try {
@@ -119,10 +110,10 @@ async function getEmojiForTitleFromServer(title) {
         });
 
         const data = await response.json();
-        return data.emoji || '📰'; // Retorna el emoji o uno por defecto
+        return data.emoji || '📰';
     } catch (error) {
         console.error('Error al obtener el emoji:', error);
-        return '📰'; // En caso de error, retornamos un emoji por defecto
+        return '📰';
     }
 }
 
@@ -137,7 +128,7 @@ async function shortenUrl(url) {
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ url: longUrlWithUtm }) // Enviamos la URL al backend
+            body: JSON.stringify({ url: longUrlWithUtm }) 
         });
 
         if (!response.ok) {
@@ -157,10 +148,9 @@ async function shortenUrl(url) {
     }
 }
 
-
 async function getWeather() {
     try {
-        const response = await fetch('/get-weather'); // Hacemos la solicitud al backend
+        const response = await fetch('/get-weather');
         const data = await response.json();
 
         if (!data.success) {
