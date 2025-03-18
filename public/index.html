@@ -15,12 +15,19 @@
             <h1>Generador de Difusión</h1>
             <p>Genera el formato de la difusión con emojis y enlaces acortados</p>
             <button id="instructions-button">📄 Instrucciones</button>
+            <select id="city-select">
+                <option value="chihuahua" selected>Chihuahua</option>
+                <option value="parral">Parral</option>
+            </select>
         </div>
 
         <div class="form-container">
-            <textarea id="input-text" placeholder="Pega el texto de la difusión sin procesar aquí" rows="8"></textarea>
+            <label for="city-select">Selecciona la ciudad:</label>
+            
+            <textarea id="input-text" placeholder="Pega el texto de la difusión" rows="8"></textarea>
             <button id="process-button">🤖 Generar difusión</button>
         </div>
+        
 
         <div class="output-container">
             <textarea id="output-text" readonly rows="12" placeholder="El resultado generado aparecerá aquí"></textarea>
@@ -31,7 +38,7 @@
             <div class="popup-content">
                 <span id="close-popup" class="close-btn">&times;</span>
                 <h2>Instrucciones de uso</h2>
-                <p><strong>Ejemplo de Texto Input:</strong></p>
+                <p><strong>Ejemplo de Texto Input Chihuahua:</strong></p>
                 <pre>PROGRAMADA: Tortas, sándwiches y quesadillas, algunos de los alimentos que podrán venderse en las escuelas: Educación 
 https://www.oem.com.mx/elheraldodechihuahua/local/cuales-alimentos-podran-vender-las-tienditas-escolares-tras-prohibicion-de-comida-chatarra-22128842
 
