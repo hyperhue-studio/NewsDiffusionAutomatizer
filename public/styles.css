@@ -104,10 +104,6 @@ button:hover {
     border-color: #333;
 }
 
-.output-container {
-
-}
-
 #output-text {
     background-color: #333;
     color: #fff;
@@ -209,28 +205,27 @@ button:hover {
     background-color: #0056b3;
 }
 
-/* /* Dropdown Styles */
 select {
     font-family: 'Inter', sans-serif;
     font-size: 1rem;
-    background-color: #333; /* Fondo oscuro para el dropdown */
-    color: #ddd; /* Texto claro */
-    border: 3px solid #444; /* Borde suave y oscuro */
-    border-radius: 10px; /* Bordes redondeados */
-    padding: 12px;
-    appearance: none; /* Elimina la apariencia predeterminada del dropdown */
     background-color: #333;
-    background-position: right 2px center; /* Posiciona la flecha a la derecha */
+    color: #ddd;
+    border: 3px solid #444;
+    border-radius: 10px;
+    padding: 12px;
+    appearance: none;
+    background-color: #333;
+    background-position: right 2px center;
     background-repeat: no-repeat;
     background-image: url('data:image/svg+xml,%3Csvg%20xmlns%3D"http%3A//www.w3.org/2000/svg"%20viewBox%3D"0%200%2024%2024"%3E%3Cpath%20fill%3D"%23fff"%20d%3D"M7%2010l5%205%205-5z"%3E%3C/path%3E%3C/svg%3E'); /* Flecha estilizada hacia abajo */
-    /* Hacemos el icono de background image mas pequeño */
     background-size: 30px;
     transition: border-color 0.3s ease, background-color 0.3s ease;
+    width: auto;
+    min-width: 150px;
 }
 
-/* Focus state */
 select:focus {
-    border-color: #007BFF; /* Borde azul cuando está enfocado */
-    outline: none; /* Eliminar el contorno por defecto */
-    background-color: #444; /* Fondo ligeramente más claro cuando está enfocado */
+    border-color: #007BFF;
+    outline: none;
+    background-color: #444;
 }

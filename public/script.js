@@ -16,106 +16,124 @@ window.addEventListener('click', (event) => {
 let cityConfigs = {};
 
 document.addEventListener("DOMContentLoaded", async () => {
-    // Cargar las configuraciones de las ciudades desde el backend
     const response = await fetch('/get-city-configs');
     cityConfigs = await response.json();
-    console.log('City Configs:', cityConfigs);  // Verifica que se haya cargado correctamente
-  
-    
+    console.log('City Configs:', cityConfigs);
+
     const outputText = document.getElementById("output-text");
     const copyButton = document.getElementById("copy-button");
 
     copyButton.addEventListener("click", () => {
-        navigator.clipboard.writeText(outputText.value)
-            .then(() => {
-                console.log("Texto copiado al portapapeles.");
-            })
-            .catch((err) => {
-                console.error("Error al copiar la difusión:", err);
-                alert("❌ Hubo un error al copiar la difusión.");
-            });
+        if (!copyButton.disabled) {
+            outputText.select();
+            
+            navigator.clipboard.writeText(outputText.value)
+                .then(() => {
+                    console.log("Texto copiado al portapapeles.");
+                    copyButton.textContent = "✅ Copiado";
+                    setTimeout(() => {
+                        copyButton.textContent = "📋 Copiar Difusión";
+                    }, 2000);
+                })
+                .catch((err) => {
+                    console.error("Error al copiar la difusión:", err);
+                    alert("❌ Hubo un error al copiar la difusión.");
+                });
+        }
     });
 });
 
 document.getElementById('process-button').addEventListener('click', async () => {
     const inputText = document.getElementById('input-text').value.trim();
-    const cityKey = document.getElementById('city-select').value;  // Obtener la ciudad seleccionada
-    console.log("City Key obtenida fueee:", cityKey);  // Verifica que cityKey tenga el valor correcto
+    const cityKey = document.getElementById('city-select').value;
+    console.log("City Key obtenida fueee:", cityKey);
     const outputText = document.getElementById("output-text");
     const copyButton = document.getElementById("copy-button");
 
-    // Verifica si el texto de entrada no está vacío
     if (inputText === '') {
         alert('Por favor, pega el texto de las noticias.');
         return;
     }
 
-    // Extraemos las noticias y los enlaces
     const extractedData = await extractDataFromAI(inputText, cityKey);
-    if (!extractedData || extractedData.length !== 4) {
-        alert('No se pudieron extraer correctamente las 4 noticias.');
+
+    if (!extractedData || extractedData.length < 4) {
+        alert('No se pudieron extraer correctamente al menos 4 noticias.');
         return;
     }
 
-    // Inicializamos el array que contendrá las líneas de la salida
     const outputLines = [];
 
-    // Procesamos cada noticia y acortamos las URLs
     for (let i = 0; i < extractedData.length; i++) {
         const { titulo, enlace, emoji } = extractedData[i];
-        const shortenedUrl = await shortenUrl(enlace, cityKey);  // Pasamos cityKey para usar el dominio correcto
+        const shortenedUrl = await shortenUrl(enlace, cityKey);
 
         if (shortenedUrl) {
-            // Si es una noticia de "RÁFAGAS", le damos un formato especial
-            if (i === 1) { 
-                outputLines.push(`✒️ *RÁFAGAS*\n${titulo}\n🔗 ${shortenedUrl}`);
-            } else {
-                outputLines.push(`${emoji} *${titulo}*\n🔗 ${shortenedUrl}`);
-            }
+            outputLines.push(`${emoji} *${titulo}*\n🔗 ${shortenedUrl}`);
         }
     }
 
     console.log("City Key (from dropdown):", cityKey);
     const weather = await getWeather(cityKey);
-    
+
     if (!weather) {
         console.error("No se pudo obtener el clima.");
         return;
     }
 
-    console.log("City Key obtenida:", cityKey);
-
-    // Definimos los formatters localmente como respaldo
     const cityConfigFunctions = {
         chihuahua: {
-            formatter: ({ weather, outputLines }) => `
-☀️ *¡Buenos días!* 
+            formatter: ({ weather, outputLines }) => {
+                const modifiedLines = [...outputLines];
+                
+                if (modifiedLines.length > 1) {
+                    const secondLineTitle = modifiedLines[1].split('\n')[0].replace(/^[^\*]*\*|\*$/g, '');
+                    const secondLineUrl = modifiedLines[1].split('\n')[1];
+                    
+                    modifiedLines[1] = `✒️ *RÁFAGAS*\n${secondLineTitle}\n${secondLineUrl}`;
+                }
+        
+                return `
+☀️ *¡Buenos días!*
 🌡️ *Temperatura para hoy*
-Mínima ${weather.min}°C | Máxima ${weather.max}°C 
-
+Mínima ${weather.min}°C | Máxima ${weather.max}°C
 📰 *EN LA PORTADA DE EL HERALDO DE CHIHUAHUA*
 
-${outputLines.join('\n\n')}
-            `.trim()
+${modifiedLines.join('\n\n')}
+                `.trim();
+            }
         },
         parral: {
-            formatter: ({ weather, outputLines }) => `
-📍 *Parral al amanecer* 
-🌡️ *El clima de hoy:* 
+            formatter: ({ weather, outputLines }) => {
+                const firstFour = outputLines.slice(0, 4);
+        
+                const columnNote = outputLines[3];
+        
+                const [titleLine, urlLine] = columnNote.split('\n');
+        
+                firstFour[3] = `✒️ *${titleLine.replace(/^[^\*]*\*|\*$/g, '')}*\n${urlLine}`;
+        
+                const podcast = `🗣️👂 *¡Entérate! Escucha el resumen informativo en el podcast de OEM Noticias*\n🎧 ${outputLines[4].split('\n')[1]}`;
+        
+                return `
+🌞 ¡Buenos días, Parral!
+🌡️ Clima para hoy:
 Mínima ${weather.min}°C | Máxima ${weather.max}°C
+📰 EN LA PORTADA DE EL SOL DE PARRAL
+https://oem.com.mx/elsoldeparral
 
-🗞️ *Principales noticias de El Sol de Parral*
-
-${outputLines.join('\n\n')}
-
-💻 Más detalles en la web de El Sol de Parral
-            `.trim()
+🚨 - Titulares de hoy -
+        
+${firstFour.join('\n\n')}
+        
+${podcast}
+                `.trim();
+            }
         }
     };
 
-    // Intentamos usar el formatter del server primero, si no está disponible, usamos el local
     let finalText = "";
-    
+
     if (cityConfigs[cityKey] && typeof cityConfigs[cityKey].formatter === 'function') {
         finalText = cityConfigs[cityKey].formatter({ weather, outputLines });
     } else if (cityConfigFunctions[cityKey] && typeof cityConfigFunctions[cityKey].formatter === 'function') {
@@ -127,10 +145,10 @@ ${outputLines.join('\n\n')}
 
     console.log("Texto final:", finalText);
 
-    // Asignamos el texto generado al campo de salida
     outputText.value = finalText;
-    copyButton.classList.add("enabled");
+    
     copyButton.disabled = false;
+    copyButton.classList.add("enabled");
 });
 
 async function extractDataFromAI(text, cityKey) {
@@ -160,10 +178,10 @@ async function shortenUrl(url, cityKey) {
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ 
+            body: JSON.stringify({
                 url: longUrlWithUtm,
-                cityKey: cityKey  // Pasamos la ciudad para elegir el dominio correcto
-            }) 
+                cityKey: cityKey
+            })
         });
 
         if (!response.ok) {
@@ -185,8 +203,7 @@ async function shortenUrl(url, cityKey) {
 
 async function getWeather(cityKey) {
     try {
-        // Asegúrate de que cityKey esté siendo correctamente utilizado en la URL de la solicitud
-        const response = await fetch(`/get-weather?cityKey=${cityKey}`);  // Pasa cityKey en la URL
+        const response = await fetch(`/get-weather?cityKey=${cityKey}`);
         const data = await response.json();
 
         if (!data.success) {
