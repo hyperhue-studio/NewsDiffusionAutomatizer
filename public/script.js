@@ -103,6 +103,27 @@ ${modifiedLines.join('\n\n')}
                 `.trim();
             }
         },
+        juarez: {
+            formatter: ({ weather, outputLines }) => {
+                const modifiedLines = [...outputLines];
+                
+                if (modifiedLines.length > 1) {
+                    const secondLineTitle = modifiedLines[1].split('\n')[0].replace(/^[^\*]*\*|\*$/g, '');
+                    const secondLineUrl = modifiedLines[1].split('\n')[1];
+                    
+                    modifiedLines[1] = `✒️ *RÁFAGAS*\n${secondLineTitle}\n${secondLineUrl}`;
+                }
+        
+                return `
+☀️ *¡Buenos días!*
+🌡️ *Temperatura para hoy*
+Mínima ${weather.min}°C | Máxima ${weather.max}°C
+📰 *EN LA PORTADA DE EL HERALDO DE JUÁREZ*
+
+${modifiedLines.join('\n\n')}
+                `.trim();
+            }
+        },
         parral: {
             formatter: ({ weather, outputLines }) => {
                 const firstFour = outputLines.slice(0, 4);
