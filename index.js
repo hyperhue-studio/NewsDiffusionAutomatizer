@@ -20,8 +20,18 @@ const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 app.get("/get-weather", async (req, res) => {
   try {
     const apiKey = process.env.WEATHER_API_KEY;
-    const city = "Chihuahua";
+    const cityKey = req.query.cityKey;
+    
+    const cityMapping = {
+      chihuahua: "chihuahua",
+      juarez: "ciudad-juarez",
+      parral: "establo-el-parral"
+    };
+
+    const city = cityMapping[cityKey] || "chihuahua";
+
     const url = `https://api.weatherapi.com/v1/forecast.json?key=${apiKey}&q=${city}&days=2`;
+    console.log("URL del clima:", url);
 
     const response = await fetch(url);
     const data = await response.json();
@@ -31,6 +41,7 @@ app.get("/get-weather", async (req, res) => {
     const maxTemp = Math.round(tomorrow.day.maxtemp_c);
 
     res.json({ success: true, weather: { minTemp, maxTemp } });
+    console.log("Clima obtenido:", { minTemp, maxTemp });
   } catch (error) {
     console.error("Error al obtener el clima:", error);
     res.status(500).json({ success: false, error: "Hubo un error al obtener el clima." });
@@ -51,6 +62,7 @@ app.post("/shorten-url", async (req, res) => {
       const bitlyToken = process.env.BITLY_TOKEN;
       const cityDomains = {
           chihuahua: "elhdechihuahua.mx",
+          juarez: "bit.ly",
           parral: "bit.ly",
       };
 
@@ -118,6 +130,30 @@ app.post("/extract-data", async (req, res) => {
   try {
     const cityPrompts = {
       chihuahua: `
+        Vas a recibir un texto con 4 noticias. Cada noticia contiene un título y su respectivo enlace.
+        - Tu tarea es extraer exactamente 4 títulos y sus enlaces, ignorando cualquier prefijo o estructura innecesaria como "PROGRAMADA:", "RÁFAGAS:", errores tipográficos o acompañamientos basura.
+        - Devuélvelos en un JSON puro con la siguiente estructura:
+
+        {
+          "noticias": [
+            {"titulo": "Título 1", "enlace": "URL 1", "emoji": "📰"},
+            {"titulo": "Título 2", "enlace": "URL 2", "emoji": "📰"},
+            {"titulo": "Título 3", "enlace": "URL 3", "emoji": "📰"},
+            {"titulo": "Título 4", "enlace": "URL 4", "emoji": "📰"}
+          ]
+        }
+
+        Reglas específicas:
+        - Genera un emoji representativo para cada título basado en su contenido.
+        - No inventes noticias ni enlaces, simplemente extrae y estructura los datos.
+        - No devuelvas más de 4 elementos, si el usuario ingresó más, ignora los extras.
+        - Si una noticia pertenece a RÁFAGAS, conserva cualquier guion que aparezca al inicio del título.
+        - No pongas comentarios ni explicación adicional, solo devuelve el JSON limpio.
+        
+        Texto de entrada:
+        "${text}"
+      `,
+      juarez: `
         Vas a recibir un texto con 4 noticias. Cada noticia contiene un título y su respectivo enlace.
         - Tu tarea es extraer exactamente 4 títulos y sus enlaces, ignorando cualquier prefijo o estructura innecesaria como "PROGRAMADA:", "RÁFAGAS:", errores tipográficos o acompañamientos basura.
         - Devuélvelos en un JSON puro con la siguiente estructura:
